@@ -183,3 +183,69 @@ Thanks for the authors of **[LIO-Livox](https://github.com/Livox-SDK/LIO-Livox),
 - If you have any questions, contact here please
   - Send email to huangsiyuan@pjlab.org.cn or zhaoxudong@pjlab.org.cn
   - Report issues on GitHub.
+
+## Changed 
+I write a function： sava_data() in SC-PGO/src/laserPosegraphOptimization.cpp to save the data which can fit the format of interactive_slam
+
+## How to save the data (Refer to 4. run)：
+### Dataset Requirements
+
+ Before running the mapping functionality, please make sure the sensor data are published to the correct rostopic.
+
+- Livox LiDAR: /livox/lidar
+- IMU: /livox/imu
+- GPS: /localization/navstate_info
+
+### Run Mapping Function
+
+- In one terminal, launch the **mapping thread**
+
+```shell
+# If you don't have the GPS data
+cd ~/catkin_ws
+source devel/setup.bash
+roslaunch livox_mapping livox_mapping.launch save_path:="PATH_TO_SAVE_SLAM_POSE_RESULT"
+```
+
+```shell
+# If you have the GPS data
+cd ~/catkin_ws
+source devel/setup.bash
+roslaunch livox_mapping livox_mapping.launch useRTK:="true" save_path:="PATH_TO_SAVE_SLAM_POSE_RESULT"
+```
+
+- In another terminal, launch the **odometry thread**
+
+```shell
+cd ~/catkin_ws
+source devel/setup.bash
+roslaunch livox_odometry livox_odometry.launch save_path:="PATH_TO_SAVE_ODOM_RESULT_in_txt"
+```
+
+- In another terminal, play the rosbag
+
+```shell
+rosbag play YOUR_ROSBAG.bag
+```
+
+and you can find your data saved in the save_path:="PATH_TO_SAVE_SLAM_POSE_RESULT"
+
+## How to gennerate graph data from odometry
+```shell
+rosrun interactive_slam odometry2graph
+
+Menubar -> File -> Open -> ROS -> Choose save_path:="PATH_TO_SAVE_SLAM_POSE_RESULT"
+
+Menubar -> File -> Save -> Choose a directory you want to save the graph to
+```
+
+Yet you have saved the graph
+
+```shell
+rosrun interactive_slam interactive_slam
+
+Menubar -> File -> Open -> New map  -> Choose the directory you just saved
+
+```
+
+Yet you can refer to [interactive_slam Example1](https://github.com/SMRT-AIST/interactive_slam/wiki/Example1) and [interactive_slam Example3](https://github.com/SMRT-AIST/interactive_slam/wiki/Example3) correct a map
